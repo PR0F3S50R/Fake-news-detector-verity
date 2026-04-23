@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation — VerityAI API</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .docs-container { max-width: 800px; margin: 100px auto; padding: 0 24px; }
+        .docs-header { margin-bottom: 40px; text-align: center; }
+        .docs-header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .docs-header p { color: var(--text-secondary); font-size: 1.1rem; }
+        .docs-content { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 40px; backdrop-filter: blur(20px); }
+        .docs-content h2 { color: var(--accent-primary); margin-top: 30px; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .docs-content h3 { margin-top: 25px; margin-bottom: 10px; }
+        .docs-content p { color: var(--text-secondary); margin-bottom: 15px; }
+        .docs-content pre { background: #000; padding: 20px; border-radius: var(--radius-md); overflow-x: auto; font-family: var(--font-mono); color: #a5b4fc; font-size: 0.9rem; border: 1px solid var(--border-color); margin-bottom: 20px; }
+        .docs-content code { font-family: var(--font-mono); background: var(--bg-secondary); padding: 2px 6px; border-radius: 4px; color: var(--text-primary); font-size: 0.9em; }
+        .btn-back { display: inline-flex; align-items: center; gap: 8px; color: var(--text-secondary); margin-bottom: 20px; text-decoration: none; font-weight: 500; transition: var(--transition); }
+        .btn-back:hover { color: var(--accent-primary); }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="bg-gradient-orb orb-1"></div>
+        <div class="bg-gradient-orb orb-2"></div>
+        <div class="bg-noise"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar scrolled">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 32 32" fill="none"><path d="M16 2L4 8v8c0 7.7 5.1 14.9 12 16.8C22.9 30.9 28 23.7 28 16V8L16 2z" fill="url(#shield-gradient)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/><path d="M12 16l3 3 5-6" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="shield-gradient" x1="4" y1="2" x2="28" y2="26.8"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs></svg>
+                </div>
+                <span class="logo-text">VerityAI</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="docs.html" class="nav-link active">Documentation</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="docs-container">
+        <a href="index.html" class="btn-back">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Back to Home
+        </a>
+        
+        <div class="docs-header">
+            <h1>API Documentation</h1>
+            <p>Everything you need to integrate VerityAI's detection engine.</p>
+        </div>
+
+        <div class="docs-content">
+            <h2>Authentication</h2>
+            <p>All API requests must be authenticated using a Bearer token in the Authorization header. You can find your API key on the homepage.</p>
+            <pre><code>Authorization: Bearer YOUR_API_KEY</code></pre>
+
+            <h2>Endpoints</h2>
+            
+            <h3>1. Analyze Text</h3>
+            <p>Endpoint to analyze a plain text string for fake news indicators.</p>
+            <p><code>POST /v1/analyze</code></p>
+            
+            <p><strong>Request Body:</strong></p>
+            <pre><code>{
+  "text": "Your news article text goes here..."
+}</code></pre>
+
+            <p><strong>Response (200 OK):</strong></p>
+            <pre><code>{
+  "credibility_score": 85,
+  "verdict": "Likely Credible",
+  "sources_checked": 8,
+  "matches_found": 5,
+  "analysis_time_ms": 3200,
+  "findings": [
+    {
+      "title": "Credibility Indicators Found",
+      "description": "Positive indicators detected: 'research shows', 'peer-reviewed'."
+    }
+  ]
+}</code></pre>
+
+            <h2>Error Codes</h2>
+            <p>VerityAI uses standard HTTP response codes to indicate the success or failure of an API request.</p>
+            <ul>
+                <li style="margin-bottom: 10px;"><code>200 OK</code> - Request successful.</li>
+                <li style="margin-bottom: 10px;"><code>400 Bad Request</code> - The request body was invalid or missing the <code>text</code> parameter.</li>
+                <li style="margin-bottom: 10px;"><code>401 Unauthorized</code> - Invalid or missing API key.</li>
+                <li style="margin-bottom: 10px;"><code>429 Too Many Requests</code> - You have exceeded your rate limit (default 100 requests/minute).</li>
+                <li style="margin-bottom: 10px;"><code>500 Internal Server Error</code> - Something went wrong on our end.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

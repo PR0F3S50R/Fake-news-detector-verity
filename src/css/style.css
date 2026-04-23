@@ -24,6 +24,26 @@
     --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Light Mode Overrides */
+:root.light-mode, body.light-mode {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --bg-card: rgba(0,0,0,0.02);
+    --bg-card-hover: rgba(0,0,0,0.06);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --border-color: rgba(0,0,0,0.1);
+    --shadow-lg: 0 20px 60px rgba(0,0,0,0.05);
+}
+
+body.light-mode .navbar {
+    background: rgba(248, 250, 252, 0.6);
+}
+body.light-mode .navbar.scrolled {
+    background: rgba(248, 250, 252, 0.9);
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; font-size: 16px; }
 body {
@@ -113,6 +133,8 @@ img { max-width: 100%; }
 .btn-ghost:hover { color: var(--text-primary); background: var(--bg-card); }
 .btn-lg { padding: 14px 28px; font-size: 1rem; border-radius: var(--radius-md); }
 .icon-moon { display: none; }
+body.light-mode .icon-sun { display: none; }
+body.light-mode .icon-moon { display: block; }
 
 /* ===== Hero ===== */
 .hero {
