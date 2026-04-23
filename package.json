@@ -1,0 +1,15 @@
+{
+  "name": "verity-ai",
+  "version": "1.0.0",
+  "description": "VerityAI - AI-Powered Fake News Detection System",
+  "main": "src/index.html",
+  "scripts": {
+    "start": "npx serve src -l 3000",
+    "dev": "npx serve src -l 3000",
+    "lint": "echo 'No linter configured'",
+    "test": "echo 'No tests configured'"
+  },
+  "keywords": ["fake-news", "fact-check", "verification", "AI"],
+  "author": "VerityAI Team",
+  "license": "MIT"
+}

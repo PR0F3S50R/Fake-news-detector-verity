@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  verity-ai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: verity-ai-app
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - verity-network
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: verity-jenkins
+    ports:
+      - "8081:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    networks:
+      - verity-network
+
+volumes:
+  jenkins_data:
+
+networks:
+  verity-network:
+    driver: bridge
