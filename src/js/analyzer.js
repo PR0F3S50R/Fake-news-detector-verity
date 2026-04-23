@@ -2,18 +2,18 @@
 // Simulates multi-source cross-referencing for fake news detection
 
 const SOURCES_DB = [
-    { name: 'Reuters', icon: '📰', reliability: 0.98, domain: 'reuters.com' },
-    { name: 'AP News', icon: '🌐', reliability: 0.97, domain: 'apnews.com' },
-    { name: 'BBC News', icon: '📺', reliability: 0.96, domain: 'bbc.com' },
-    { name: 'The Guardian', icon: '🗽', reliability: 0.94, domain: 'theguardian.com' },
-    { name: 'NPR', icon: '📡', reliability: 0.95, domain: 'npr.org' },
-    { name: 'Snopes', icon: '🏛️', reliability: 0.93, domain: 'snopes.com' },
-    { name: 'PolitiFact', icon: '✅', reliability: 0.92, domain: 'politifact.com' },
-    { name: 'FactCheck.org', icon: '🔍', reliability: 0.94, domain: 'factcheck.org' },
-    { name: 'AFP Fact Check', icon: '📋', reliability: 0.91, domain: 'factcheck.afp.com' },
+    { name: 'CNN', icon: '📺', reliability: 0.95, domain: 'cnn.com' },
+    { name: 'Times Now', icon: '📰', reliability: 0.92, domain: 'timesnownews.com' },
+    { name: 'BBC News', icon: '🌐', reliability: 0.96, domain: 'bbc.com' },
+    { name: 'New York Times', icon: '🗽', reliability: 0.97, domain: 'nytimes.com' },
+    { name: 'The Wall Street Journal', icon: '📊', reliability: 0.94, domain: 'wsj.com' },
+    { name: 'NDTV', icon: '📡', reliability: 0.93, domain: 'ndtv.com' },
+    { name: 'Fox News', icon: '📺', reliability: 0.88, domain: 'foxnews.com' },
+    { name: 'India Today', icon: '🇮🇳', reliability: 0.91, domain: 'indiatoday.in' },
+    { name: 'Reuters', icon: '🌍', reliability: 0.98, domain: 'reuters.com' },
+    { name: 'The Washington Post', icon: '🏛️', reliability: 0.95, domain: 'washingtonpost.com' },
     { name: 'Al Jazeera', icon: '🌍', reliability: 0.89, domain: 'aljazeera.com' },
-    { name: 'Full Fact', icon: '🔬', reliability: 0.90, domain: 'fullfact.org' },
-    { name: 'MBFC News', icon: '📊', reliability: 0.88, domain: 'mediabiasfactcheck.com' },
+    { name: 'Bloomberg', icon: '📈', reliability: 0.96, domain: 'bloomberg.com' }
 ];
 
 // Known fake news patterns (keyword-based heuristic simulation)
