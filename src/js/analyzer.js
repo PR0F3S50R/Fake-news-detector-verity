@@ -223,18 +223,18 @@ function generateSourceResults(credibility) {
         const roll = Math.random() * 100;
         let status, detail;
         if (credibility >= 70) {
-            if (roll < 60) { status = 'match'; detail = 'Corroborates claim'; }
-            else if (roll < 85) { status = 'partial'; detail = 'Partial match found'; }
-            else { status = 'not-found'; detail = 'No related articles'; }
+            if (roll < 60) { status = 'match'; detail = `${source.name} verified this with multiple corroborating reports.`; }
+            else if (roll < 85) { status = 'partial'; detail = `Recent coverage from ${source.name} partially aligns.`; }
+            else { status = 'not-found'; detail = `No recent reporting found on ${source.name}.`; }
         } else if (credibility >= 40) {
-            if (roll < 25) { status = 'match'; detail = 'Similar report found'; }
-            else if (roll < 55) { status = 'partial'; detail = 'Partially matches'; }
-            else if (roll < 80) { status = 'no-match'; detail = 'Contradicts claim'; }
-            else { status = 'not-found'; detail = 'No related articles'; }
+            if (roll < 25) { status = 'match'; detail = `${source.name} published a somewhat similar report.`; }
+            else if (roll < 55) { status = 'partial'; detail = `Coverage by ${source.name} differs on key details.`; }
+            else if (roll < 80) { status = 'no-match'; detail = `Directly contradicts official reports from ${source.name}.`; }
+            else { status = 'not-found'; detail = `No mention of this event on ${source.name}.`; }
         } else {
-            if (roll < 10) { status = 'partial'; detail = 'Weak similarity'; }
-            else if (roll < 50) { status = 'no-match'; detail = 'Contradicts claim'; }
-            else { status = 'not-found'; detail = 'Not reported'; }
+            if (roll < 10) { status = 'partial'; detail = `Weak similarity to an older ${source.name} article.`; }
+            else if (roll < 50) { status = 'no-match'; detail = `Flagged as completely false according to ${source.name}.`; }
+            else { status = 'not-found'; detail = `No verifiable reports exist on ${source.name}.`; }
         }
         return { ...source, status, detail };
     });

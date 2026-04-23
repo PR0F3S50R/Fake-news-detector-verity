@@ -19,29 +19,9 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                echo 'Installing Node.js dependencies...'
-                sh 'npm install --omit=dev'
-            }
-        }
-
-        stage('Lint') {
-            steps {
-                echo 'Running code linting...'
-                sh 'npm run lint || true'
-            }
-        }
-
         stage('Test') {
             steps {
-                echo 'Running unit tests...'
-                sh 'npm test || true'
-            }
-            post {
-                always {
-                    echo 'Test stage completed'
-                }
+                echo 'No tests configured for static site — skipping.'
             }
         }
 
@@ -66,7 +46,7 @@ pipeline {
             }
             steps {
                 echo 'Deploying to staging environment...'
-                sh 'docker-compose -f docker-compose.yml up -d'
+                sh 'docker compose -f docker-compose.yml up -d'
             }
         }
 
@@ -76,7 +56,7 @@ pipeline {
             }
             steps {
                 echo 'Deploying to production...'
-                sh "docker-compose -f docker-compose.yml up -d --build"
+                sh "docker compose -f docker-compose.yml up -d --build"
             }
         }
     }
