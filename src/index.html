@@ -1,17 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="VerityAI - Advanced Fake News Detection System that scours multiple legitimate sources to generate comprehensive legitimacy reports.">
+    <meta name="description"
+        content="VerityAI - Advanced Fake News Detection System that scours multiple legitimate sources to generate comprehensive legitimacy reports.">
     <meta name="keywords" content="fake news, fact checking, news verification, AI, legitimacy report">
     <meta name="author" content="VerityAI Team">
     <title>VerityAI — Fake News Detection System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="css/style.css?v=2">
 </head>
+
 <body>
     <!-- Animated Background -->
     <div class="bg-animation">
@@ -27,12 +32,14 @@
             <a href="#" class="nav-logo">
                 <div class="logo-icon">
                     <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M16 2L4 8v8c0 7.7 5.1 14.9 12 16.8C22.9 30.9 28 23.7 28 16V8L16 2z" fill="url(#shield-gradient)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-                        <path d="M12 16l3 3 5-6" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 2L4 8v8c0 7.7 5.1 14.9 12 16.8C22.9 30.9 28 23.7 28 16V8L16 2z"
+                            fill="url(#shield-gradient)" stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+                        <path d="M12 16l3 3 5-6" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
                         <defs>
                             <linearGradient id="shield-gradient" x1="4" y1="2" x2="28" y2="26.8">
-                                <stop stop-color="#6366f1"/>
-                                <stop offset="1" stop-color="#8b5cf6"/>
+                                <stop stop-color="#6366f1" />
+                                <stop offset="1" stop-color="#8b5cf6" />
                             </linearGradient>
                         </defs>
                     </svg>
@@ -47,8 +54,22 @@
             </div>
             <div class="nav-actions">
                 <button class="btn btn-ghost" id="theme-toggle">
-                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5" />
+                        <line x1="12" y1="1" x2="12" y2="3" />
+                        <line x1="12" y1="21" x2="12" y2="23" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                        <line x1="1" y1="12" x2="3" y2="12" />
+                        <line x1="21" y1="12" x2="23" y2="12" />
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
                 </button>
                 <a href="#analyze" class="btn btn-primary nav-cta">Start Analyzing</a>
             </div>
@@ -64,24 +85,30 @@
             <div class="hero-content">
                 <div class="hero-badge">
                     <span class="badge-dot"></span>
-                    <span>AI-Powered Verification Engine</span>
+                    <span>AI-Powered Fake News Detector Engine</span>
                 </div>
                 <h1 class="hero-title">
                     Detect <span class="gradient-text">Fake News</span> with
                     <br>AI-Driven Precision
                 </h1>
                 <p class="hero-subtitle">
-                    VerityAI scours multiple legitimate news sources, cross-references claims, 
+                    VerityAI scours multiple legitimate news sources, cross-references claims,
                     and generates comprehensive legitimacy reports — all in seconds.
                 </p>
                 <div class="hero-actions">
                     <a href="#analyze" class="btn btn-primary btn-lg">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
                         Analyze News
                     </a>
                     <a href="#api" class="btn btn-outline btn-lg">
                         API Access
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="16 18 22 12 16 6" />
+                            <polyline points="8 6 2 12 8 18" />
+                        </svg>
                     </a>
                 </div>
                 <div class="hero-stats">
@@ -101,28 +128,43 @@
             <div class="section-header">
                 <span class="section-tag">Verification Engine</span>
                 <h2 class="section-title">Analyze Any News Article</h2>
-                <p class="section-desc">Paste a news headline, article URL, or full text below to get an instant legitimacy report.</p>
+                <p class="section-desc">Paste a news headline, article URL, or full text below to get an instant
+                    legitimacy report.</p>
             </div>
             <div class="analyzer-card">
                 <div class="analyzer-tabs">
                     <button class="tab-btn active" data-tab="text" id="tab-text">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                        </svg>
                         Text / Headline
                     </button>
                     <button class="tab-btn" data-tab="url" id="tab-url">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                        </svg>
                         URL
                     </button>
                 </div>
                 <div class="analyzer-body">
                     <div class="tab-content active" id="content-text">
-                        <textarea id="news-text-input" class="analyzer-input" placeholder="Paste the news headline or full article text here...&#10;&#10;Example: &quot;Scientists discover new planet made entirely of diamonds orbiting nearby star&quot;" rows="6"></textarea>
+                        <textarea id="news-text-input" class="analyzer-input"
+                            placeholder="Paste the news headline or full article text here...&#10;&#10;Example: &quot;Scientists discover new planet made entirely of diamonds orbiting nearby star&quot;"
+                            rows="6"></textarea>
                     </div>
                     <div class="tab-content" id="content-url">
-                        <input type="url" id="news-url-input" class="analyzer-url-input" placeholder="https://example.com/news-article">
+                        <input type="url" id="news-url-input" class="analyzer-url-input"
+                            placeholder="https://example.com/news-article">
                     </div>
                     <button class="btn btn-primary btn-lg btn-analyze" id="analyze-btn">
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8" />
+                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
                         <span class="btn-text">Analyze Now</span>
                         <div class="btn-loader" style="display:none;">
                             <div class="loader-spinner"></div>
@@ -140,7 +182,11 @@
             <div class="results-header">
                 <h2 class="section-title">Legitimacy Report</h2>
                 <button class="btn btn-ghost" id="download-report">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
                     Download Report
                 </button>
             </div>
@@ -149,8 +195,9 @@
             <div class="verdict-card" id="verdict-card">
                 <div class="verdict-gauge">
                     <svg class="gauge-svg" viewBox="0 0 200 200">
-                        <circle class="gauge-bg" cx="100" cy="100" r="85" fill="none" stroke-width="12"/>
-                        <circle class="gauge-fill" cx="100" cy="100" r="85" fill="none" stroke-width="12" stroke-dasharray="534" stroke-dashoffset="534" id="gauge-circle"/>
+                        <circle class="gauge-bg" cx="100" cy="100" r="85" fill="none" stroke-width="12" />
+                        <circle class="gauge-fill" cx="100" cy="100" r="85" fill="none" stroke-width="12"
+                            stroke-dasharray="534" stroke-dashoffset="534" id="gauge-circle" />
                     </svg>
                     <div class="gauge-center">
                         <span class="gauge-score" id="gauge-score">0</span>
@@ -163,11 +210,17 @@
                     <p class="verdict-desc" id="verdict-desc">Processing your submission...</p>
                     <div class="verdict-meta">
                         <div class="meta-item">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12 6 12 12 16 14" />
+                            </svg>
                             <span id="analysis-time">-</span>
                         </div>
                         <div class="meta-item">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                            </svg>
                             <span id="sources-checked">-</span>
                         </div>
                     </div>
@@ -209,7 +262,10 @@
             <!-- New Analysis -->
             <div class="new-analysis-cta">
                 <button class="btn btn-outline btn-lg" id="new-analysis-btn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="1 4 1 10 7 10" />
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                    </svg>
                     Start New Analysis
                 </button>
             </div>
@@ -224,7 +280,8 @@
             <div class="section-header">
                 <span class="section-tag">Trusted Network</span>
                 <h2 class="section-title">Our Verification Sources</h2>
-                <p class="section-desc">We cross-reference news against the world's most trusted and reputable news organizations.</p>
+                <p class="section-desc">We cross-reference news against the world's most trusted and reputable news
+                    organizations.</p>
             </div>
             <div class="sources-showcase">
                 <div class="source-logo-card">
@@ -285,17 +342,22 @@
             <div class="section-header">
                 <span class="section-tag">Developers</span>
                 <h2 class="section-title">API Access</h2>
-                <p class="section-desc">Integrate VerityAI's powerful fake news detection engine directly into your applications.</p>
+                <p class="section-desc">Integrate VerityAI's powerful fake news detection engine directly into your
+                    applications.</p>
             </div>
-            <div class="api-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 40px; backdrop-filter: blur(20px);">
+            <div class="api-card"
+                style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 40px; backdrop-filter: blur(20px);">
                 <h3 style="margin-bottom: 10px; font-size: 1.25rem;">Your API Key</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 20px;">Use this key to authenticate your requests to the VerityAI API. Keep it secure and do not share it publicly.</p>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">Use this key to authenticate your requests
+                    to the VerityAI API. Keep it secure and do not share it publicly.</p>
                 <div style="display: flex; gap: 12px; margin-bottom: 30px;">
-                    <input type="text" value="vk_live_9f8a7b6c5d4e3f2g1h0i9j8k7l6m5n4o" readonly style="flex: 1; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 12px 16px; border-radius: var(--radius-sm); color: var(--text-primary); font-family: var(--font-mono); font-size: 1rem;">
+                    <input type="text" value="vk_live_9f8a7b6c5d4e3f2g1h0i9j8k7l6m5n4o" readonly
+                        style="flex: 1; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 12px 16px; border-radius: var(--radius-sm); color: var(--text-primary); font-family: var(--font-mono); font-size: 1rem;">
                     <button class="btn btn-primary" onclick="alert('API Key copied to clipboard!')">Copy Key</button>
                 </div>
                 <h3 style="margin-bottom: 10px; font-size: 1.25rem;">Example Request</h3>
-                <pre style="background: #000; padding: 20px; border-radius: var(--radius-md); overflow-x: auto; font-family: var(--font-mono); color: #a5b4fc; font-size: 0.9rem; border: 1px solid var(--border-color);"><code>curl -X POST https://api.verityai.com/v1/analyze \
+                <pre
+                    style="background: #000; padding: 20px; border-radius: var(--radius-md); overflow-x: auto; font-family: var(--font-mono); color: #a5b4fc; font-size: 0.9rem; border: 1px solid var(--border-color);"><code>curl -X POST https://api.verityai.com/v1/analyze \
   -H "Authorization: Bearer vk_live_9f8a7b6c5d4e3f2g1h0i9j8k7l6m5n4o" \
   -H "Content-Type: application/json" \
   -d '{"text": "Scientists discover new planet made entirely of diamonds..."}'</code></pre>
@@ -310,7 +372,18 @@
                 <div class="footer-brand">
                     <a href="#" class="nav-logo">
                         <div class="logo-icon">
-                            <svg viewBox="0 0 32 32" fill="none"><path d="M16 2L4 8v8c0 7.7 5.1 14.9 12 16.8C22.9 30.9 28 23.7 28 16V8L16 2z" fill="url(#shield-gradient-f)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/><path d="M12 16l3 3 5-6" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="shield-gradient-f" x1="4" y1="2" x2="28" y2="26.8"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs></svg>
+                            <svg viewBox="0 0 32 32" fill="none">
+                                <path d="M16 2L4 8v8c0 7.7 5.1 14.9 12 16.8C22.9 30.9 28 23.7 28 16V8L16 2z"
+                                    fill="url(#shield-gradient-f)" stroke="rgba(255,255,255,0.3)" stroke-width="1" />
+                                <path d="M12 16l3 3 5-6" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                <defs>
+                                    <linearGradient id="shield-gradient-f" x1="4" y1="2" x2="28" y2="26.8">
+                                        <stop stop-color="#6366f1" />
+                                        <stop offset="1" stop-color="#8b5cf6" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
                         </div>
                         <span class="logo-text">VerityAI</span>
                     </a>
@@ -336,4 +409,5 @@
     <script src="js/app.js"></script>
     <script src="js/analyzer.js"></script>
 </body>
+
 </html>
