@@ -158,7 +158,35 @@ const INDICATOR_WEIGHTS = {
     word_count_bonus:     { label: 'Content Depth',            weight: 18, direction: 'positive' },
 };
 
+// ===== Live Word Counter =====
+const MIN_WORDS = 100;
+
+function updateWordCounter(el) {
+    const wc      = el.value.trim().split(/\s+/).filter(Boolean).length;
+    const display = document.getElementById('word-count-display');
+    const fill    = document.getElementById('word-count-fill');
+    if (!display || !fill) return;
+
+    const pct = Math.min(wc / MIN_WORDS * 100, 100);
+    fill.style.width = pct + '%';
+
+    if (wc >= MIN_WORDS) {
+        fill.style.background = 'var(--success)';
+        display.style.color   = 'var(--success)';
+        display.textContent   = `${wc} words \u2713 Ready to analyse`;
+    } else if (wc >= MIN_WORDS * 0.6) {
+        fill.style.background = 'var(--warning)';
+        display.style.color   = 'var(--warning)';
+        display.textContent   = `${wc} / ${MIN_WORDS} words \u2014 ${MIN_WORDS - wc} more needed`;
+    } else {
+        fill.style.background = 'var(--danger)';
+        display.style.color   = 'var(--text-secondary)';
+        display.textContent   = `${wc} / ${MIN_WORDS} words minimum`;
+    }
+}
+
 // ===== Main Analysis Handler =====
+
 document.getElementById('analyze-btn').addEventListener('click', async () => {
     const textInput = document.getElementById('news-text-input');
     const urlInput  = document.getElementById('news-url-input');
@@ -171,8 +199,65 @@ document.getElementById('analyze-btn').addEventListener('click', async () => {
         return;
     }
 
+    // Enforce 100-word minimum for text input
+    if (activeTab === 'text') {
+        const wordCount = rawInput.split(/\s+/).filter(Boolean).length;
+        if (wordCount < MIN_WORDS) {
+            showWordCountWarning(textInput, wordCount);
+            return;
+        }
+    }
+
+    // Clear any previous warning
+    const prev = document.getElementById('word-count-warning');
+    if (prev) prev.remove();
+
     await runAnalysis(rawInput, activeTab);
 });
+
+function showWordCountWarning(inputEl, currentCount) {
+    shakeButton();
+    const existing = document.getElementById('word-count-warning');
+    if (existing) existing.remove();
+
+    const warn = document.createElement('div');
+    warn.id = 'word-count-warning';
+    warn.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             style="width:16px;height:16px;flex-shrink:0;">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>Minimum <strong>${MIN_WORDS} words</strong> required for accurate analysis.
+        You have <strong>${currentCount} word${currentCount !== 1 ? 's' : ''}</strong> — please add
+        ${MIN_WORDS - currentCount} more.</span>
+    `;
+    warn.style.cssText = [
+        'display:flex', 'align-items:center', 'gap:10px',
+        'background:rgba(239,68,68,0.1)', 'border:1px solid rgba(239,68,68,0.3)',
+        'border-radius:10px', 'padding:12px 16px', 'margin-top:12px',
+        'color:var(--danger)', 'font-size:0.875rem', 'line-height:1.5',
+        'animation:fadeIn 0.3s ease'
+    ].join(';');
+
+    inputEl.parentNode.appendChild(warn);
+
+    // Auto-dismiss once the user reaches 100 words
+    inputEl.addEventListener('input', function onInput() {
+        const wc = this.value.trim().split(/\s+/).filter(Boolean).length;
+        const badge = warn.querySelector('span');
+        if (badge) {
+            badge.innerHTML = `Minimum <strong>${MIN_WORDS} words</strong> required. You have <strong>${wc} word${wc !== 1 ? 's' : ''}</strong>${wc < MIN_WORDS ? ` — add ${MIN_WORDS - wc} more` : ' ✓ ready to analyse!'}. `;
+        }
+        if (wc >= MIN_WORDS) {
+            warn.style.background = 'rgba(34,197,94,0.1)';
+            warn.style.borderColor = 'rgba(34,197,94,0.3)';
+            warn.style.color = 'var(--success)';
+            setTimeout(() => { warn.remove(); inputEl.removeEventListener('input', onInput); }, 1500);
+        }
+    });
+}
 
 async function runAnalysis(rawInput, type) {
     const analyzeBtn = document.getElementById('analyze-btn');
@@ -315,7 +400,7 @@ function analyzeContent(content, type, urlMeta = null) {
 
     if (hasExcessiveCaps)        fakeScore += INDICATOR_WEIGHTS.excessive_caps.weight;
     if (hasExcessivePunctuation) fakeScore += INDICATOR_WEIGHTS.excessive_punct.weight;
-    if (wordCount < 10)          fakeScore += INDICATOR_WEIGHTS.short_content.weight;
+    if (wordCount < MIN_WORDS)   fakeScore += INDICATOR_WEIGHTS.short_content.weight;
 
     // Diminishing returns on fake indicators:
     // first match costs 12 pts, each additional costs 7 pts (not additive -15 per word)

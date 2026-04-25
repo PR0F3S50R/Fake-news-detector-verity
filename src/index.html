@@ -163,8 +163,14 @@
                     </div>
                     <div class="tab-content active" id="content-text">
                         <textarea id="news-text-input" class="analyzer-input"
-                            placeholder="Paste the news headline or full article text here...&#10;&#10;Example: &quot;Scientists discover new planet made entirely of diamonds orbiting nearby star&quot;"
-                            rows="6"></textarea>
+                            placeholder="Paste at least 100 words of article text here for accurate analysis...&#10;&#10;Example: &quot;Scientists discover new planet made entirely of diamonds orbiting nearby star...&quot;"
+                            rows="8" oninput="updateWordCounter(this)"></textarea>
+                        <div id="word-counter" style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-size:0.8rem; color:var(--text-secondary);">
+                            <span id="word-count-display">0 / 100 words minimum</span>
+                            <div id="word-count-bar" style="width:140px; height:5px; background:var(--border-color); border-radius:99px; overflow:hidden;">
+                                <div id="word-count-fill" style="height:100%; width:0%; background:var(--danger); border-radius:99px; transition:width 0.3s ease, background 0.3s ease;"></div>
+                            </div>
+                        </div>
                     </div>
                     <div class="tab-content" id="content-url">
                         <input type="url" id="news-url-input" class="analyzer-url-input"
