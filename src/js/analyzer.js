@@ -94,49 +94,128 @@ const INDICATOR_WEIGHTS = {
 // ===== Main Analysis Handler =====
 document.getElementById('analyze-btn').addEventListener('click', async () => {
     const textInput = document.getElementById('news-text-input');
-    const urlInput = document.getElementById('news-url-input');
+    const urlInput  = document.getElementById('news-url-input');
     const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
 
-    const content = activeTab === 'text' ? textInput.value.trim() : urlInput.value.trim();
+    const rawInput = activeTab === 'text' ? textInput.value.trim() : urlInput.value.trim();
 
-    if (!content) {
+    if (!rawInput) {
         shakeButton();
         return;
     }
 
-    await runAnalysis(content, activeTab);
+    await runAnalysis(rawInput, activeTab);
 });
 
-async function runAnalysis(content, type) {
+async function runAnalysis(rawInput, type) {
     const analyzeBtn = document.getElementById('analyze-btn');
-    const btnText = analyzeBtn.querySelector('.btn-text');
+    const btnText   = analyzeBtn.querySelector('.btn-text');
     const btnLoader = analyzeBtn.querySelector('.btn-loader');
-    const btnIcon = analyzeBtn.querySelector('.btn-icon');
+    const btnIcon   = analyzeBtn.querySelector('.btn-icon');
+    const loaderLabel = btnLoader.querySelector('span');
 
     // Show loading state
-    btnText.style.display = 'none';
-    btnIcon.style.display = 'none';
+    btnText.style.display  = 'none';
+    btnIcon.style.display  = 'none';
     btnLoader.style.display = 'flex';
     analyzeBtn.disabled = true;
 
-    // Simulate multi-source scanning with progressive delay
-    await simulateScanning(3500);
+    let content = rawInput;
+    let urlMeta = null;
+
+    if (type === 'url') {
+        // Validate URL format
+        let parsedUrl;
+        try {
+            parsedUrl = new URL(rawInput);
+        } catch {
+            showUrlError('Invalid URL. Please include https:// at the start.');
+            resetBtn();
+            return;
+        }
+
+        loaderLabel.textContent = 'Fetching article...';
+        try {
+            content = await fetchUrlContent(rawInput);
+            urlMeta = { domain: parsedUrl.hostname.replace('www.', '') };
+        } catch (err) {
+            // Fallback: analyse the URL string for domain-based credibility
+            content = rawInput;
+            urlMeta = { domain: parsedUrl.hostname.replace('www.', ''), fallback: true };
+        }
+        loaderLabel.textContent = 'Scanning Sources...';
+    }
+
+    // Simulate multi-source scanning
+    await simulateScanning(2800);
 
     // Generate analysis results
-    const results = analyzeContent(content, type);
+    const results = analyzeContent(content, type, urlMeta);
 
-    // Reset button
-    btnText.style.display = 'inline';
-    btnIcon.style.display = 'inline';
-    btnLoader.style.display = 'none';
-    analyzeBtn.disabled = false;
-
-    // Display results
+    resetBtn();
     displayResults(results);
+
+    function resetBtn() {
+        btnText.style.display  = 'inline';
+        btnIcon.style.display  = 'inline';
+        btnLoader.style.display = 'none';
+        if (loaderLabel) loaderLabel.textContent = 'Scanning Sources...';
+        analyzeBtn.disabled = false;
+    }
 }
 
-function analyzeContent(content, type) {
+// ===== URL Content Fetcher (via CORS proxy) =====
+async function fetchUrlContent(url) {
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+    const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(10000) });
+    if (!res.ok) throw new Error('Proxy fetch failed');
+    const data = await res.json();
+    if (!data.contents) throw new Error('Empty response');
+
+    // Parse HTML and extract readable text
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(data.contents, 'text/html');
+
+    // Remove non-content elements
+    doc.querySelectorAll('script, style, nav, header, footer, aside, noscript, iframe, [aria-hidden="true"]').forEach(el => el.remove());
+
+    // Try to find main article content
+    const articleEl = doc.querySelector(
+        'article, [class*="article"], [class*="story"], [class*="post"], main, #content, .content'
+    ) || doc.body;
+
+    const text = (articleEl.innerText || articleEl.textContent || '').trim();
+    if (!text || text.length < 50) throw new Error('Could not extract article text');
+    return text.slice(0, 8000); // Cap at 8000 chars for analysis
+}
+
+function showUrlError(msg) {
+    const urlInput = document.getElementById('news-url-input');
+    urlInput.style.borderColor = 'var(--danger)';
+    urlInput.style.boxShadow   = '0 0 0 4px rgba(239,68,68,0.15)';
+    const existing = document.getElementById('url-error-msg');
+    if (existing) existing.remove();
+    const err = document.createElement('p');
+    err.id = 'url-error-msg';
+    err.textContent = msg;
+    err.style.cssText = 'color:var(--danger);font-size:0.85rem;margin-top:8px;';
+    urlInput.parentNode.appendChild(err);
+    setTimeout(() => {
+        urlInput.style.borderColor = '';
+        urlInput.style.boxShadow   = '';
+        err.remove();
+    }, 4000);
+}
+
+function analyzeContent(content, type, urlMeta = null) {
     const text = content.toLowerCase();
+
+    // Domain credibility boost when analysing a URL from a known trusted source
+    let domainBoost = 0;
+    if (urlMeta && urlMeta.domain) {
+        const match = SOURCES_DB.find(s => urlMeta.domain.includes(s.domain) || s.domain.includes(urlMeta.domain));
+        if (match) domainBoost = Math.round((match.reliability - 0.88) * 60);
+    }
 
     // Detect script/language for auto-tagging
     const detectedLang = detectLanguage(text);
@@ -179,13 +258,16 @@ function analyzeContent(content, type) {
     credibility -= fakeScore;
     credibility += credScore;
     credibility += wordCountBonus;
+    credibility += domainBoost; // Domain reputation bonus for known outlets
 
     credibility = Math.max(5, Math.min(98, credibility));
     credibility += Math.floor(Math.random() * 8) - 4;
     credibility = Math.max(5, Math.min(98, credibility));
 
     // Confidence interval (±margin based on content length and indicator count)
-    const uncertainty = Math.max(4, 18 - Math.min(wordCount / 5, 10) - (credMatches.length * 1.5));
+    // URLs get tighter bounds since we have article-level text
+    const urlUncertaintyReduction = urlMeta && !urlMeta.fallback ? 4 : 0;
+    const uncertainty = Math.max(3, 18 - Math.min(wordCount / 5, 10) - (credMatches.length * 1.5) - urlUncertaintyReduction);
     const confidenceLow  = Math.max(0,   Math.round(credibility - uncertainty));
     const confidenceHigh = Math.min(100, Math.round(credibility + uncertainty));
 
@@ -276,6 +358,21 @@ function analyzeContent(content, type) {
             title: `Multi-Language Content Detected (${detectedLang.toUpperCase()})`,
             text: `Regionalised indicator dictionary activated for ${LANGUAGE_NAMES[detectedLang] || detectedLang}. Analysis includes transliterated misinformation patterns.`
         });
+    }
+    if (urlMeta) {
+        const matchedSource = SOURCES_DB.find(s => urlMeta.domain.includes(s.domain) || s.domain.includes(urlMeta.domain));
+        if (matchedSource) {
+            findings.push({
+                title: `Known Source Identified: ${matchedSource.name}`,
+                text: `The URL domain "${urlMeta.domain}" is a verified source in our network (reliability: ${Math.round(matchedSource.reliability * 100)}%). A domain credibility boost of +${domainBoost} pts was applied.`
+            });
+        }
+        if (urlMeta.fallback) {
+            findings.push({
+                title: 'URL Content Could Not Be Fetched',
+                text: 'The article content could not be retrieved — the site may block scrapers or require a login. Domain-based analysis was applied. For best results, paste the article text directly into the Text tab.'
+            });
+        }
     }
     if (findings.length === 0) {
         findings.push({
