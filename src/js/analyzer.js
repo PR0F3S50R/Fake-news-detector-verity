@@ -24,19 +24,86 @@ const SOURCES_DB = [
 ];
 
 // ===== Multi-Language Indicator Dictionaries =====
-// English
+// English — ONLY multi-word or highly specific phrases that never appear in legitimate journalism
 const FAKE_INDICATORS_EN = [
-    'breaking:', 'shocking', 'you won\'t believe', 'secret', 'they don\'t want you to know',
-    'exposed', 'miracle', 'cure', 'banned', 'coverup', 'conspiracy', 'illuminati',
-    'alien', 'hoax confirmed', 'mainstream media lies', 'deep state', 'plandemic',
-    'microchip', '5g causes', 'flat earth', 'chemtrails', 'mind control',
-    'big pharma', 'government hiding', 'suppressed', 'wake up sheeple'
+    // Classic misinformation hooks
+    "you won't believe",
+    "they don't want you to know",
+    "what the media won't tell you",
+    "what they're hiding",
+    "share before it gets deleted",
+    "wake up sheeple",
+    "do your own research",
+    "doctors hate this",
+    "one weird trick",
+    // Conspiracy-specific phrases
+    'deep state',
+    'hoax confirmed',
+    'plandemic',
+    'flat earth',
+    'chemtrails',
+    'illuminati confirmed',
+    '5g causes',
+    'microchip vaccine',
+    'new world order',
+    'mainstream media lies',
+    'mainstream media won\'t report',
+    'false flag',
+    'crisis actor',
+    // Sensational hooks
+    'shocking truth',
+    'breaking exclusive',
+    'bombshell report',
+    'must read before banned',
+    'suppressed cure',
+    'miracle cure discovered',
+    'banned by government',
+    'government cover-up confirmed',
+    'elites don\'t want you',
+    'reptilian',
+    'mind control chips',
+    'satanic ritual',
 ];
 const CREDIBLE_INDICATORS_EN = [
-    'according to', 'study finds', 'research shows', 'officials said',
-    'report indicates', 'data suggests', 'peer-reviewed', 'published in',
-    'university', 'scientists', 'evidence', 'investigation', 'confirmed by'
+    'according to',
+    'study finds',
+    'research shows',
+    'officials said',
+    'officials confirmed',
+    'report indicates',
+    'data suggests',
+    'peer-reviewed',
+    'published in',
+    'university',
+    'scientists say',
+    'researchers found',
+    'evidence shows',
+    'investigation found',
+    'confirmed by',
+    'spokesperson said',
+    'statement released',
+    'court documents',
+    'official statement',
+    'press conference',
+    'government announced',
+    'ministry of',
+    'survey found',
+    'statistics show',
+    'analysis of',
+    'experts say',
 ];
+
+// ===== Indicator Matcher — uses word-boundary regex for single words, includes() for phrases =====
+function matchIndicator(text, indicator) {
+    if (!indicator.includes(' ')) {
+        // Single-word: use \b boundary to avoid partial matches
+        try {
+            return new RegExp('\\b' + indicator.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b').test(text);
+        } catch { return text.includes(indicator); }
+    }
+    return text.includes(indicator);
+}
+
 
 // Hindi (romanized transliteration)
 const FAKE_INDICATORS_HI = [
@@ -224,7 +291,7 @@ function analyzeContent(content, type, urlMeta = null) {
     let fakeScore = 0;
     let fakeMatches = [];
     FAKE_INDICATORS.forEach(indicator => {
-        if (text.includes(indicator)) {
+        if (matchIndicator(text, indicator)) {
             fakeScore += INDICATOR_WEIGHTS.sensational_language.weight;
             fakeMatches.push(indicator);
         }
@@ -234,7 +301,7 @@ function analyzeContent(content, type, urlMeta = null) {
     let credScore = 0;
     let credMatches = [];
     CREDIBLE_INDICATORS.forEach(indicator => {
-        if (text.includes(indicator)) {
+        if (matchIndicator(text, indicator)) {
             credScore += INDICATOR_WEIGHTS.credible_cues.weight;
             credMatches.push(indicator);
         }
