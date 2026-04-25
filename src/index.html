@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -8,7 +8,7 @@
         content="VerityAI - Advanced Fake News Detection System that scours multiple legitimate sources to generate comprehensive legitimacy reports.">
     <meta name="keywords" content="fake news, fact checking, news verification, AI, legitimacy report">
     <meta name="author" content="VerityAI Team">
-    <title>VerityAI — Fake News Detection System</title>
+    <title>VerityAI â€” Fake News Detection System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -93,7 +93,7 @@
                 </h1>
                 <p class="hero-subtitle">
                     VerityAI scours multiple legitimate news sources, cross-references claims,
-                    and generates comprehensive legitimacy reports — all in seconds.
+                    and generates comprehensive legitimacy reports â€” all in seconds.
                 </p>
                 <div class="hero-actions">
                     <a href="#analyze" class="btn btn-primary btn-lg">
@@ -151,6 +151,16 @@
                     </button>
                 </div>
                 <div class="analyzer-body">
+                    <!-- Language Selector -->
+                    <div class="lang-selector-row">
+                        <label for="language-select">ðŸŒ Content Language:</label>
+                        <select id="language-select" class="lang-select">
+                            <option value="en">English</option>
+                            <option value="hi">Hindi (Romanized)</option>
+                            <option value="bn">Bengali (Romanized)</option>
+                            <option value="ta">Tamil (Romanized)</option>
+                        </select>
+                    </div>
                     <div class="tab-content active" id="content-text">
                         <textarea id="news-text-input" class="analyzer-input"
                             placeholder="Paste the news headline or full article text here...&#10;&#10;Example: &quot;Scientists discover new planet made entirely of diamonds orbiting nearby star&quot;"
@@ -208,6 +218,11 @@
                     <div class="verdict-badge" id="verdict-badge">Analyzing...</div>
                     <h3 class="verdict-title" id="verdict-title">Verification Complete</h3>
                     <p class="verdict-desc" id="verdict-desc">Processing your submission...</p>
+                    <!-- Confidence Band & Language Tag -->
+                    <div class="verdict-extras">
+                        <span class="confidence-band" id="confidence-band"></span>
+                        <span class="lang-tag" id="lang-tag" style="display:none;"></span>
+                    </div>
                     <div class="verdict-meta">
                         <div class="meta-item">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -259,7 +274,18 @@
                 </div>
             </div>
 
-            <!-- New Analysis -->
+            <!-- Score Explainability -->
+            <div class="report-card explainability-card">
+                <div class="card-header">
+                    <h3>Score Explainability</h3>
+                    <span class="card-badge" style="background: rgba(99,102,241,0.15); color: var(--accent-primary);">AI Factors</span>
+                </div>
+                <div class="explainability-content" id="explainability-content">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- New Analysis & Flag -->
             <div class="new-analysis-cta">
                 <button class="btn btn-outline btn-lg" id="new-analysis-btn">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -267,6 +293,13 @@
                         <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
                     </svg>
                     Start New Analysis
+                </button>
+                <button class="btn btn-ghost btn-lg flag-btn" id="flag-content-btn" title="Flag this content as suspicious">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                        <line x1="4" y1="22" x2="4" y2="15"/>
+                    </svg>
+                    <span class="flag-count">Flag as Suspicious</span>
                 </button>
             </div>
         </div>
@@ -285,51 +318,51 @@
             </div>
             <div class="sources-showcase">
                 <div class="source-logo-card">
-                    <div class="source-icon">📰</div>
+                    <div class="source-icon">ðŸ“°</div>
                     <span>Reuters</span>
                 </div>
                 <div class="source-logo-card">
-                    <div class="source-icon">🌐</div>
+                    <div class="source-icon">ðŸŒ</div>
                     <span>AP News</span>
                 </div>
                 <div class="source-logo-card">
-                    <div class="source-icon">📺</div>
+                    <div class="source-icon">ðŸ“º</div>
                     <span>BBC News</span>
                 </div>
                 <div class="source-logo-card">
-                    <div class="source-icon">🗽</div>
+                    <div class="source-icon">ðŸ—½</div>
                     <span>The Guardian</span>
                 </div>
                 <div class="source-logo-card">
-                    <div class="source-icon">📡</div>
+                    <div class="source-icon">ðŸ“¡</div>
                     <span>NPR</span>
                 </div>
                 <div class="source-logo-card">
-                    <div class="source-icon">🏛️</div>
+                    <div class="source-icon">ðŸ›ï¸</div>
                     <span>Snopes</span>
                 </div>
                 <div class="source-logo-card">
-                    <div class="source-icon">✅</div>
+                    <div class="source-icon">âœ…</div>
                     <span>PolitiFact</span>
                 </div>
                 <div class="source-logo-card">
-                    <div class="source-icon">🔍</div>
+                    <div class="source-icon">ðŸ”</div>
                     <span>FactCheck.org</span>
                 </div>
                 <div class="source-logo-card">
-                    <div class="source-icon">📋</div>
+                    <div class="source-icon">ðŸ“‹</div>
                     <span>AFP Fact Check</span>
                 </div>
                 <div class="source-logo-card">
-                    <div class="source-icon">🌍</div>
+                    <div class="source-icon">ðŸŒ</div>
                     <span>Al Jazeera</span>
                 </div>
                 <div class="source-logo-card">
-                    <div class="source-icon">🔬</div>
+                    <div class="source-icon">ðŸ”¬</div>
                     <span>Full Fact</span>
                 </div>
                 <div class="source-logo-card">
-                    <div class="source-icon">📊</div>
+                    <div class="source-icon">ðŸ“Š</div>
                     <span>MBFC News</span>
                 </div>
             </div>
@@ -401,7 +434,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 VerityAI. All rights reserved. Built with ❤️ for truth.</p>
+                <p>&copy; 2026 VerityAI. All rights reserved. Built with â¤ï¸ for truth.</p>
             </div>
         </div>
     </footer>

@@ -385,3 +385,110 @@ body.light-mode .icon-moon { display: block; }
     .steps-grid { flex-direction: column; }
     .step-connector { transform: rotate(90deg); width: 40px; }
 }
+
+/* ===== Future Scope: Language Selector ===== */
+.lang-selector-row {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px; flex-wrap: wrap;
+}
+.lang-selector-row label {
+    font-size: 0.85rem; font-weight: 600;
+    color: var(--text-secondary); white-space: nowrap;
+}
+.lang-select {
+    background: var(--bg-secondary); border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm); padding: 8px 14px;
+    color: var(--text-primary); font-family: var(--font-main);
+    font-size: 0.875rem; cursor: pointer; transition: var(--transition);
+}
+.lang-select:hover, .lang-select:focus {
+    border-color: var(--accent-primary); outline: none;
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* ===== Future Scope: Confidence Band & Language Tag ===== */
+.verdict-extras {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin-bottom: 18px; margin-top: -4px;
+}
+.confidence-band {
+    display: inline-block; padding: 4px 12px; border-radius: 50px;
+    font-size: 0.78rem; font-weight: 600;
+    background: rgba(99,102,241,0.1); color: var(--accent-primary);
+    border: 1px solid rgba(99,102,241,0.2); font-family: var(--font-mono);
+}
+.lang-tag {
+    padding: 4px 12px; border-radius: 50px;
+    font-size: 0.78rem; font-weight: 600;
+    background: rgba(34,197,94,0.1); color: var(--success);
+    border: 1px solid rgba(34,197,94,0.2);
+}
+
+/* ===== Future Scope: Source Reliability Badge ===== */
+.source-reliability-badge {
+    display: inline-block; margin-left: 6px;
+    padding: 1px 7px; border-radius: 50px;
+    font-size: 0.7rem; font-weight: 700;
+    background: rgba(99,102,241,0.15); color: var(--accent-primary);
+    font-family: var(--font-mono); vertical-align: middle;
+}
+
+/* ===== Future Scope: Explainability Panel ===== */
+.explainability-card { margin-bottom: 24px; }
+.explainability-content { display: flex; flex-direction: column; gap: 10px; }
+.explain-factor {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 16px; border-radius: var(--radius-sm);
+    font-size: 0.875rem; font-weight: 500;
+}
+.explain-factor.positive {
+    background: rgba(34,197,94,0.08); border-left: 3px solid var(--success);
+}
+.explain-factor.negative {
+    background: rgba(239,68,68,0.08); border-left: 3px solid var(--danger);
+}
+.explain-label { color: var(--text-primary); }
+.explain-impact {
+    font-family: var(--font-mono); font-weight: 700; font-size: 0.85rem;
+}
+.explain-factor.positive .explain-impact { color: var(--success); }
+.explain-factor.negative .explain-impact { color: var(--danger); }
+.explain-empty { font-size: 0.875rem; color: var(--text-muted); padding: 12px; }
+
+/* ===== Future Scope: Community Flag Button ===== */
+.new-analysis-cta {
+    display: flex; justify-content: center; align-items: center;
+    gap: 16px; flex-wrap: wrap;
+}
+.flag-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--border-color); border-radius: var(--radius-md);
+    padding: 14px 24px; font-size: 0.9rem; font-weight: 600;
+    color: var(--text-muted); transition: var(--transition);
+}
+.flag-btn:hover { border-color: var(--warning); color: var(--warning); background: rgba(245,158,11,0.06); }
+.flag-btn.flagged { border-color: var(--warning); color: var(--warning); background: rgba(245,158,11,0.1); }
+.flag-btn svg { width: 18px; height: 18px; }
+
+/* ===== Future Scope: Sources Section Labels & Regional Cards ===== */
+.sources-section-label {
+    font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--text-secondary); margin: 28px 0 12px;
+    display: flex; align-items: center; gap: 8px;
+}
+.sources-section-label:first-of-type { margin-top: 0; }
+.future-tag {
+    font-size: 0.7rem; padding: 2px 8px; border-radius: 50px;
+    background: rgba(99,102,241,0.15); color: var(--accent-primary);
+    text-transform: none; letter-spacing: 0; font-weight: 600;
+}
+.source-logo-card.regional {
+    border-style: dashed; opacity: 0.75;
+}
+.source-logo-card.regional:hover { opacity: 1; }
+.src-badge {
+    font-size: 0.7rem; font-weight: 700; font-family: var(--font-mono);
+    padding: 2px 8px; border-radius: 50px;
+    background: rgba(99,102,241,0.12); color: var(--accent-primary);
+    margin-top: -4px;
+}

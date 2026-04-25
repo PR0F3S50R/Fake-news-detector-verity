@@ -2,34 +2,94 @@
 // Simulates multi-source cross-referencing for fake news detection
 
 const SOURCES_DB = [
-    { name: 'CNN', icon: '📺', reliability: 0.93, domain: 'cnn.com' },
-    { name: 'Times Now', icon: '📰', reliability: 0.89, domain: 'timesnownews.com' },
-    { name: 'BBC News', icon: '🌐', reliability: 0.97, domain: 'bbc.com' },
-    { name: 'New York Times', icon: '🗽', reliability: 0.96, domain: 'nytimes.com' },
-    { name: 'The Wall Street Journal', icon: '📊', reliability: 0.94, domain: 'wsj.com' },
-    { name: 'NDTV', icon: '📡', reliability: 0.92, domain: 'ndtv.com' },
-    { name: 'The Hindu', icon: '🪔', reliability: 0.95, domain: 'thehindu.com' },
-    { name: 'India Today', icon: '🇮🇳', reliability: 0.91, domain: 'indiatoday.in' },
-    { name: 'Telegraph India', icon: '🗞️', reliability: 0.90, domain: 'telegraphindia.com' },
-    { name: 'The Washington Post', icon: '🏛️', reliability: 0.94, domain: 'washingtonpost.com' },
-    { name: 'Al Jazeera', icon: '🌍', reliability: 0.88, domain: 'aljazeera.com' },
-    { name: 'Fox News', icon: '📺', reliability: 0.82, domain: 'foxnews.com' }
+    // International
+    { name: 'BBC News',             icon: '🌐', reliability: 0.97, domain: 'bbc.com',              region: 'intl' },
+    { name: 'New York Times',       icon: '🗽', reliability: 0.96, domain: 'nytimes.com',          region: 'intl' },
+    { name: 'The Wall Street Journal', icon: '📊', reliability: 0.94, domain: 'wsj.com',          region: 'intl' },
+    { name: 'The Washington Post',  icon: '🏛️', reliability: 0.94, domain: 'washingtonpost.com',  region: 'intl' },
+    { name: 'CNN',                  icon: '📺', reliability: 0.93, domain: 'cnn.com',              region: 'intl' },
+    { name: 'Al Jazeera',           icon: '🌍', reliability: 0.88, domain: 'aljazeera.com',        region: 'intl' },
+    { name: 'Fox News',             icon: '📺', reliability: 0.82, domain: 'foxnews.com',          region: 'intl' },
+    // National Indian
+    { name: 'The Hindu',            icon: '🪔', reliability: 0.95, domain: 'thehindu.com',         region: 'india' },
+    { name: 'NDTV',                 icon: '📡', reliability: 0.92, domain: 'ndtv.com',             region: 'india' },
+    { name: 'India Today',          icon: '🇮🇳', reliability: 0.91, domain: 'indiatoday.in',       region: 'india' },
+    { name: 'Telegraph India',      icon: '🗞️', reliability: 0.90, domain: 'telegraphindia.com',  region: 'india' },
+    { name: 'Times Now',            icon: '📰', reliability: 0.89, domain: 'timesnownews.com',    region: 'india' },
+    // Regional Indian (Future Scope — expanded network)
+    { name: 'Dainik Bhaskar',       icon: '🗺️', reliability: 0.87, domain: 'bhaskar.com',         region: 'regional' },
+    { name: 'Ananda Bazar Patrika', icon: '📋', reliability: 0.88, domain: 'anandabazar.com',     region: 'regional' },
+    { name: 'Eenadu',               icon: '🔔', reliability: 0.86, domain: 'eenadu.net',           region: 'regional' },
+    { name: 'Dinamalar',            icon: '🌺', reliability: 0.85, domain: 'dinamalar.com',        region: 'regional' },
 ];
 
-// Known fake news patterns (keyword-based heuristic simulation)
-const FAKE_INDICATORS = [
+// ===== Multi-Language Indicator Dictionaries =====
+// English
+const FAKE_INDICATORS_EN = [
     'breaking:', 'shocking', 'you won\'t believe', 'secret', 'they don\'t want you to know',
     'exposed', 'miracle', 'cure', 'banned', 'coverup', 'conspiracy', 'illuminati',
     'alien', 'hoax confirmed', 'mainstream media lies', 'deep state', 'plandemic',
     'microchip', '5g causes', 'flat earth', 'chemtrails', 'mind control',
     'big pharma', 'government hiding', 'suppressed', 'wake up sheeple'
 ];
-
-const CREDIBLE_INDICATORS = [
+const CREDIBLE_INDICATORS_EN = [
     'according to', 'study finds', 'research shows', 'officials said',
     'report indicates', 'data suggests', 'peer-reviewed', 'published in',
     'university', 'scientists', 'evidence', 'investigation', 'confirmed by'
 ];
+
+// Hindi (romanized transliteration)
+const FAKE_INDICATORS_HI = [
+    'bada khulasa', 'sach saamne aaya', 'sarkar chupa rahi', 'media jhooth bol rahi',
+    'viral sach', 'andha vishwas', 'chmatkar', 'nafrat failao', 'bharat ke dushman',
+    'danga', 'jhooth', 'fake news', 'sedition', 'desh drohi'
+];
+const CREDIBLE_INDICATORS_HI = [
+    'sarkari adhikaari ne kaha', 'report ke anusar', 'shodh mein paya gaya',
+    'vishwavidyalay', 'vaigyanik', 'saboot', 'janch', 'pushtikaran'
+];
+
+// Bengali (romanized transliteration)
+const FAKE_INDICATORS_BN = [
+    'baro khobor', 'sarkar lukiye rakhche', 'media mithye bolche', 'viral satya',
+    'dhoka', 'provocative', 'bhoy', 'satarko thakun', 'danga lagiye dite'
+];
+const CREDIBLE_INDICATORS_BN = [
+    'sarkaari kothay bola hoyeche', 'protibedon anuyayi', 'biswavidyalay', 'bigganider mat'
+];
+
+// Tamil (romanized transliteration)
+const FAKE_INDICATORS_TA = [
+    'arasai maraikkindra', 'unmai veliyidapadavillai', 'aanmiga rahasiyam',
+    'media poruntadha unmai', 'aayiram sathagam unmai'
+];
+const CREDIBLE_INDICATORS_TA = [
+    'ariviyal aalargal koorugiraargal', 'aavanapatru', 'seydi nischayappadugiradhu'
+];
+
+// Active language (toggled by language selector)
+let ACTIVE_LANGUAGE = 'en';
+let FAKE_INDICATORS    = [...FAKE_INDICATORS_EN];
+let CREDIBLE_INDICATORS = [...CREDIBLE_INDICATORS_EN];
+
+function setLanguage(lang) {
+    ACTIVE_LANGUAGE = lang;
+    const fakeMap = { en: FAKE_INDICATORS_EN, hi: FAKE_INDICATORS_HI, bn: FAKE_INDICATORS_BN, ta: FAKE_INDICATORS_TA };
+    const credMap = { en: CREDIBLE_INDICATORS_EN, hi: CREDIBLE_INDICATORS_HI, bn: CREDIBLE_INDICATORS_BN, ta: CREDIBLE_INDICATORS_TA };
+    FAKE_INDICATORS     = [...FAKE_INDICATORS_EN, ...(fakeMap[lang] || [])];
+    CREDIBLE_INDICATORS = [...CREDIBLE_INDICATORS_EN, ...(credMap[lang] || [])];
+}
+
+// Per-indicator weights for explainability
+const INDICATOR_WEIGHTS = {
+    sensational_language: { label: 'Sensational Language',     weight: 15, direction: 'negative' },
+    excessive_caps:       { label: 'Excessive Capitalization', weight: 10, direction: 'negative' },
+    excessive_punct:      { label: 'Excessive Punctuation',    weight: 10, direction: 'negative' },
+    short_content:        { label: 'Insufficient Content',     weight:  5, direction: 'negative' },
+    credible_cues:        { label: 'Credibility Cues',         weight: 10, direction: 'positive' },
+    source_corroboration: { label: 'Source Corroboration',     weight: 15, direction: 'positive' },
+    word_count_bonus:     { label: 'Content Depth',            weight: 10, direction: 'positive' },
+};
 
 // ===== Main Analysis Handler =====
 document.getElementById('analyze-btn').addEventListener('click', async () => {
@@ -78,12 +138,15 @@ async function runAnalysis(content, type) {
 function analyzeContent(content, type) {
     const text = content.toLowerCase();
 
-    // Calculate fake indicator score
+    // Detect script/language for auto-tagging
+    const detectedLang = detectLanguage(text);
+
+    // Calculate fake indicator score with per-indicator weights
     let fakeScore = 0;
     let fakeMatches = [];
     FAKE_INDICATORS.forEach(indicator => {
         if (text.includes(indicator)) {
-            fakeScore += 15;
+            fakeScore += INDICATOR_WEIGHTS.sensational_language.weight;
             fakeMatches.push(indicator);
         }
     });
@@ -93,7 +156,7 @@ function analyzeContent(content, type) {
     let credMatches = [];
     CREDIBLE_INDICATORS.forEach(indicator => {
         if (text.includes(indicator)) {
-            credScore += 10;
+            credScore += INDICATOR_WEIGHTS.credible_cues.weight;
             credMatches.push(indicator);
         }
     });
@@ -104,29 +167,38 @@ function analyzeContent(content, type) {
     const hasExcessivePunctuation = (content.match(/[!?]{2,}/g) || []).length > 1;
     const hasSensationalLanguage = fakeMatches.length > 0;
 
-    if (hasExcessiveCaps) fakeScore += 10;
-    if (hasExcessivePunctuation) fakeScore += 10;
-    if (wordCount < 10) fakeScore += 5;
+    if (hasExcessiveCaps)        fakeScore += INDICATOR_WEIGHTS.excessive_caps.weight;
+    if (hasExcessivePunctuation) fakeScore += INDICATOR_WEIGHTS.excessive_punct.weight;
+    if (wordCount < 10)          fakeScore += INDICATOR_WEIGHTS.short_content.weight;
 
-    // Base credibility score (0-100)
-    // Weighted average reliability of the current source pool raises the baseline
+    const wordCountBonus = Math.min(wordCount / 10, 10);
+
+    // Base credibility — pool-averaged reliability baseline
     const avgReliability = SOURCES_DB.reduce((sum, s) => sum + s.reliability, 0) / SOURCES_DB.length;
-    let credibility = Math.round(avgReliability * 70); // Scales to ~65 based on source pool quality
+    let credibility = Math.round(avgReliability * 70);
     credibility -= fakeScore;
     credibility += credScore;
-    credibility += Math.min(wordCount / 10, 10); // Longer = slightly more credible
+    credibility += wordCountBonus;
 
-    // Clamp between 5 and 98
     credibility = Math.max(5, Math.min(98, credibility));
-
-    // Add small controlled randomness for realism (±4 pts)
     credibility += Math.floor(Math.random() * 8) - 4;
     credibility = Math.max(5, Math.min(98, credibility));
+
+    // Confidence interval (±margin based on content length and indicator count)
+    const uncertainty = Math.max(4, 18 - Math.min(wordCount / 5, 10) - (credMatches.length * 1.5));
+    const confidenceLow  = Math.max(0,   Math.round(credibility - uncertainty));
+    const confidenceHigh = Math.min(100, Math.round(credibility + uncertainty));
+
+    // Explainability breakdown
+    const explainability = buildExplainability({
+        fakeMatches, credMatches, hasExcessiveCaps,
+        hasExcessivePunctuation, wordCount, wordCountBonus, fakeScore, credScore
+    });
 
     // Generate source results
     const sourceResults = generateSourceResults(credibility);
 
-    // Determine verdict
+    // Verdict
     let verdict, verdictClass, verdictDesc;
     if (credibility >= 70) {
         verdict = 'Likely Credible';
@@ -160,7 +232,7 @@ function analyzeContent(content, type) {
             color: credibility >= 50 ? 'var(--accent-primary)' : 'var(--danger)'
         },
         {
-            label: 'Emotional Manipulation Score',
+            label: 'Emotional Manipulation',
             value: hasExcessiveCaps || hasExcessivePunctuation ? Math.min(80, 100 - credibility + 20) : Math.max(10, 100 - credibility),
             color: (100 - credibility) < 40 ? 'var(--success)' : 'var(--danger)',
             inverted: true
@@ -172,49 +244,87 @@ function analyzeContent(content, type) {
     if (fakeMatches.length > 0) {
         findings.push({
             title: 'Sensational Language Detected',
-            text: `The following trigger phrases were found: "${fakeMatches.join('", "')}" — these are commonly used in misleading or clickbait articles.`
+            text: `Trigger phrases found: "${fakeMatches.join('", "')}" — commonly used in misleading or clickbait articles. Each phrase reduced credibility by ${INDICATOR_WEIGHTS.sensational_language.weight} pts.`
         });
     }
     if (hasExcessiveCaps) {
         findings.push({
             title: 'Excessive Capitalization',
-            text: 'The article uses excessive uppercase text, which is a common tactic in sensationalized or misleading content.'
+            text: `Excessive uppercase text detected (−${INDICATOR_WEIGHTS.excessive_caps.weight} pts). A common tactic in sensationalized content.`
         });
     }
     if (hasExcessivePunctuation) {
         findings.push({
             title: 'Excessive Punctuation',
-            text: 'Multiple exclamation or question marks were detected, suggesting emotionally manipulative writing.'
+            text: `Multiple !!/!! patterns detected (−${INDICATOR_WEIGHTS.excessive_punct.weight} pts), suggesting emotionally manipulative writing.`
         });
     }
     if (credMatches.length > 0) {
         findings.push({
-            title: 'Credibility Indicators Found',
-            text: `Positive indicators detected: "${credMatches.join('", "')}" — these suggest the article references verifiable information.`
+            title: 'Credibility Cues Found',
+            text: `Positive signals: "${credMatches.join('", "')}" — each cue added +${INDICATOR_WEIGHTS.credible_cues.weight} pts to the credibility score.`
         });
     }
     if (wordCount < 20) {
         findings.push({
             title: 'Limited Content',
-            text: 'The submitted text is very short, which limits the depth of analysis. Consider submitting a full article for better results.'
+            text: `Only ${wordCount} words analysed. Submit a full article for a more accurate result.`
+        });
+    }
+    if (detectedLang !== 'en') {
+        findings.push({
+            title: `Multi-Language Content Detected (${detectedLang.toUpperCase()})`,
+            text: `Regionalised indicator dictionary activated for ${LANGUAGE_NAMES[detectedLang] || detectedLang}. Analysis includes transliterated misinformation patterns.`
         });
     }
     if (findings.length === 0) {
         findings.push({
             title: 'General Assessment',
-            text: 'No strong indicators of misinformation were detected. However, always verify important claims through multiple trusted sources.'
+            text: 'No strong indicators of misinformation detected. Always verify important claims through multiple trusted sources.'
         });
     }
 
     const matchedSources = sourceResults.filter(s => s.status === 'match').length;
     return {
         credibility: Math.round(credibility),
+        confidenceLow, confidenceHigh,
         verdict, verdictClass, verdictDesc,
-        sourceResults, metrics, findings,
+        sourceResults, metrics, findings, explainability,
         sourcesChecked: sourceResults.length,
         matchedSources,
+        detectedLang,
         analysisTime: (2.5 + Math.random() * 3).toFixed(1)
     };
+}
+
+// ===== Language Detection =====
+const LANGUAGE_NAMES = { en: 'English', hi: 'Hindi', bn: 'Bengali', ta: 'Tamil' };
+
+function detectLanguage(text) {
+    // Check Hindi romanized markers
+    const hiMarkers = ['hai', 'nahi', 'aur', 'kya', 'sarkar', 'bharat', 'desh', 'log', 'baat'];
+    const bnMarkers = ['amader', 'bangla', 'manush', 'khobor', 'bolche', 'korche'];
+    const taMarkers = ['avar', 'naan', 'ungal', 'tamilnadu', 'arasangam', 'tamil'];
+    const scoreHi = hiMarkers.filter(w => text.includes(w)).length;
+    const scoreBn = bnMarkers.filter(w => text.includes(w)).length;
+    const scoreTa = taMarkers.filter(w => text.includes(w)).length;
+    if (scoreHi >= 2) { setLanguage('hi'); return 'hi'; }
+    if (scoreBn >= 2) { setLanguage('bn'); return 'bn'; }
+    if (scoreTa >= 2) { setLanguage('ta'); return 'ta'; }
+    setLanguage('en');
+    return 'en';
+}
+
+// ===== Explainability Builder =====
+function buildExplainability({ fakeMatches, credMatches, hasExcessiveCaps, hasExcessivePunctuation, wordCount, wordCountBonus, fakeScore, credScore }) {
+    const factors = [];
+    if (fakeMatches.length > 0) factors.push({ label: 'Sensational language', impact: -(fakeMatches.length * INDICATOR_WEIGHTS.sensational_language.weight), type: 'negative' });
+    if (hasExcessiveCaps)       factors.push({ label: 'Excessive caps',        impact: -INDICATOR_WEIGHTS.excessive_caps.weight,  type: 'negative' });
+    if (hasExcessivePunctuation) factors.push({ label: 'Excessive punctuation', impact: -INDICATOR_WEIGHTS.excessive_punct.weight, type: 'negative' });
+    if (wordCount < 10)         factors.push({ label: 'Too short',             impact: -INDICATOR_WEIGHTS.short_content.weight,   type: 'negative' });
+    if (credMatches.length > 0) factors.push({ label: 'Credibility cues',      impact: +(credMatches.length * INDICATOR_WEIGHTS.credible_cues.weight), type: 'positive' });
+    if (wordCountBonus > 0)     factors.push({ label: 'Content depth bonus',   impact: +Math.round(wordCountBonus),                type: 'positive' });
+    return factors;
 }
 
 // Source-specific corroboration messages for realistic cross-referencing
@@ -295,47 +405,51 @@ function displayResults(results) {
     const resultsSection = document.getElementById('results');
     resultsSection.style.display = 'block';
 
-    // Scroll to results
     setTimeout(() => {
         resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
 
     // Animate gauge
     const gaugeCircle = document.getElementById('gauge-circle');
-    const gaugeScore = document.getElementById('gauge-score');
-    const circumference = 2 * Math.PI * 85; // ~534
+    const gaugeScore  = document.getElementById('gauge-score');
+    const circumference = 2 * Math.PI * 85;
     const offset = circumference - (results.credibility / 100) * circumference;
-
-    // Set gauge color based on verdict
     const gaugeColors = { credible: 'var(--success)', suspicious: 'var(--warning)', fake: 'var(--danger)' };
     gaugeCircle.style.stroke = gaugeColors[results.verdictClass];
-
-    setTimeout(() => {
-        gaugeCircle.style.strokeDashoffset = offset;
-    }, 200);
-
-    // Animate score counter
+    setTimeout(() => { gaugeCircle.style.strokeDashoffset = offset; }, 200);
     animateCounter(gaugeScore, results.credibility, 2000);
+
+    // Confidence band
+    const confBand = document.getElementById('confidence-band');
+    if (confBand) confBand.textContent = `Confidence interval: ${results.confidenceLow}–${results.confidenceHigh}`;
+
+    // Language tag
+    const langTag = document.getElementById('lang-tag');
+    if (langTag) {
+        langTag.textContent = results.detectedLang !== 'en'
+            ? `🌐 ${LANGUAGE_NAMES[results.detectedLang]} mode active`
+            : '🌐 English';
+        langTag.style.display = 'inline-block';
+    }
 
     // Verdict
     const verdictBadge = document.getElementById('verdict-badge');
     verdictBadge.textContent = results.verdict;
     verdictBadge.className = `verdict-badge ${results.verdictClass}`;
     document.getElementById('verdict-title').textContent = 'Verification Complete';
-    document.getElementById('verdict-desc').textContent = results.verdictDesc;
-    document.getElementById('analysis-time').textContent = `${results.analysisTime}s analysis`;
+    document.getElementById('verdict-desc').textContent  = results.verdictDesc;
+    document.getElementById('analysis-time').textContent  = `${results.analysisTime}s analysis`;
     document.getElementById('sources-checked').textContent = `${results.sourcesChecked} sources checked`;
+    document.getElementById('source-match-badge').textContent = `${results.matchedSources}/${results.sourcesChecked} matched`;
 
-    // Source match badge
-    document.getElementById('source-match-badge').textContent =
-        `${results.matchedSources}/${results.sourcesChecked} matched`;
-
-    // Source list
+    // Source list with reliability badge
     const sourcesList = document.getElementById('sources-list');
     sourcesList.innerHTML = results.sourceResults.map(s => `
         <div class="source-item">
             <div class="source-status ${s.status}"></div>
-            <span class="source-name">${s.icon} ${s.name}</span>
+            <span class="source-name">${s.icon} ${s.name}
+                <span class="source-reliability-badge">${Math.round(s.reliability * 100)}%</span>
+            </span>
             <span class="source-detail">${s.detail}</span>
         </div>
     `).join('');
@@ -353,13 +467,26 @@ function displayResults(results) {
             </div>
         </div>
     `).join('');
-
-    // Animate metric bars
     setTimeout(() => {
         document.querySelectorAll('.metric-fill').forEach((fill, i) => {
             fill.style.width = `${results.metrics[i].value}%`;
         });
     }, 300);
+
+    // Explainability panel
+    const explainPanel = document.getElementById('explainability-content');
+    if (explainPanel) {
+        if (results.explainability.length === 0) {
+            explainPanel.innerHTML = '<p class="explain-empty">No significant positive or negative factors detected — content appears neutral.</p>';
+        } else {
+            explainPanel.innerHTML = results.explainability.map(f => `
+                <div class="explain-factor ${f.type}">
+                    <span class="explain-label">${f.label}</span>
+                    <span class="explain-impact">${f.impact > 0 ? '+' : ''}${f.impact} pts</span>
+                </div>
+            `).join('');
+        }
+    }
 
     // Findings
     const findingsContent = document.getElementById('findings-content');
@@ -369,6 +496,9 @@ function displayResults(results) {
             <p>${f.text}</p>
         </div>
     `).join('');
+
+    // Community flag button state
+    updateFlagCount();
 }
 
 // ===== Helpers =====
@@ -435,13 +565,29 @@ document.getElementById('download-report').addEventListener('click', () => {
         report += `  ${item.querySelector('p').textContent}\n\n`;
     });
 
-    report += `\n${'='.repeat(50)}\nGenerated by VerityAI | verityai.com\n`;
+// ===== Community Flagging (localStorage) =====
+function updateFlagCount() {
+    const btn = document.getElementById('flag-content-btn');
+    if (!btn) return;
+    const count = parseInt(localStorage.getItem('verityai_flags') || '0');
+    btn.querySelector('.flag-count').textContent = count > 0 ? `${count} flagged` : 'Flag as Suspicious';
+}
 
-    const blob = new Blob([report], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `VerityAI_Report_${Date.now()}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
+document.addEventListener('click', e => {
+    if (e.target.closest('#flag-content-btn')) {
+        const current = parseInt(localStorage.getItem('verityai_flags') || '0');
+        localStorage.setItem('verityai_flags', current + 1);
+        const btn = document.getElementById('flag-content-btn');
+        btn.classList.add('flagged');
+        btn.querySelector('.flag-count').textContent = `${current + 1} flagged`;
+        btn.title = 'You have flagged this content. Thank you for helping the community.';
+    }
 });
+
+// ===== Language Selector =====
+document.addEventListener('change', e => {
+    if (e.target.id === 'language-select') {
+        setLanguage(e.target.value);
+    }
+});
+
