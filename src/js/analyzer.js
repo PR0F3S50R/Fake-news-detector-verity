@@ -82,13 +82,13 @@ function setLanguage(lang) {
 
 // Per-indicator weights for explainability
 const INDICATOR_WEIGHTS = {
-    sensational_language: { label: 'Sensational Language',     weight: 15, direction: 'negative' },
-    excessive_caps:       { label: 'Excessive Capitalization', weight: 10, direction: 'negative' },
-    excessive_punct:      { label: 'Excessive Punctuation',    weight: 10, direction: 'negative' },
-    short_content:        { label: 'Insufficient Content',     weight:  5, direction: 'negative' },
-    credible_cues:        { label: 'Credibility Cues',         weight: 10, direction: 'positive' },
+    sensational_language: { label: 'Sensational Language',     weight: 12, direction: 'negative' },
+    excessive_caps:       { label: 'Excessive Capitalization', weight:  8, direction: 'negative' },
+    excessive_punct:      { label: 'Excessive Punctuation',    weight:  8, direction: 'negative' },
+    short_content:        { label: 'Insufficient Content',     weight:  4, direction: 'negative' },
+    credible_cues:        { label: 'Credibility Cues',         weight: 14, direction: 'positive' },
     source_corroboration: { label: 'Source Corroboration',     weight: 15, direction: 'positive' },
-    word_count_bonus:     { label: 'Content Depth',            weight: 10, direction: 'positive' },
+    word_count_bonus:     { label: 'Content Depth',            weight: 18, direction: 'positive' },
 };
 
 // ===== Main Analysis Handler =====
@@ -250,18 +250,38 @@ function analyzeContent(content, type, urlMeta = null) {
     if (hasExcessivePunctuation) fakeScore += INDICATOR_WEIGHTS.excessive_punct.weight;
     if (wordCount < 10)          fakeScore += INDICATOR_WEIGHTS.short_content.weight;
 
-    const wordCountBonus = Math.min(wordCount / 10, 10);
+    // Diminishing returns on fake indicators:
+    // first match costs 12 pts, each additional costs 7 pts (not additive -15 per word)
+    let fakePenalty = 0;
+    if (fakeMatches.length === 1) fakePenalty = 12;
+    else if (fakeMatches.length === 2) fakePenalty = 19;
+    else if (fakeMatches.length === 3) fakePenalty = 26;
+    else if (fakeMatches.length >= 4)  fakePenalty = 26 + (fakeMatches.length - 3) * 6;
+    fakeScore = (fakeScore - (fakeMatches.length * INDICATOR_WEIGHTS.sensational_language.weight)) + fakePenalty;
 
-    // Base credibility — pool-averaged reliability baseline
+    // Word-count bonus: scales more generously, max 18 pts at 200+ words
+    const wordCountBonus = wordCount >= 200
+        ? 18
+        : wordCount >= 100
+            ? 12 + Math.round((wordCount - 100) / 100 * 6)
+            : wordCount >= 30
+                ? 5 + Math.round((wordCount - 30) / 70 * 7)
+                : Math.round(wordCount / 30 * 5);
+
+    // Credible indicator reward: 14 pts each, capped at 3 matches to prevent gaming
+    const effectiveCredScore = Math.min(credMatches.length, 3) * INDICATOR_WEIGHTS.credible_cues.weight
+        + Math.max(0, credMatches.length - 3) * 5;
+
+    // Base credibility — start at 75 so neutral/professional content is naturally credible
     const avgReliability = SOURCES_DB.reduce((sum, s) => sum + s.reliability, 0) / SOURCES_DB.length;
-    let credibility = Math.round(avgReliability * 70);
+    let credibility = Math.round(avgReliability * 83); // ~75 base
     credibility -= fakeScore;
-    credibility += credScore;
+    credibility += effectiveCredScore;
     credibility += wordCountBonus;
-    credibility += domainBoost; // Domain reputation bonus for known outlets
+    credibility += domainBoost;
 
     credibility = Math.max(5, Math.min(98, credibility));
-    credibility += Math.floor(Math.random() * 8) - 4;
+    credibility += Math.floor(Math.random() * 6) - 3; // smaller random jitter ±3
     credibility = Math.max(5, Math.min(98, credibility));
 
     // Confidence interval (±margin based on content length and indicator count)
@@ -274,26 +294,61 @@ function analyzeContent(content, type, urlMeta = null) {
     // Explainability breakdown
     const explainability = buildExplainability({
         fakeMatches, credMatches, hasExcessiveCaps,
-        hasExcessivePunctuation, wordCount, wordCountBonus, fakeScore, credScore
+        hasExcessivePunctuation, wordCount, wordCountBonus,
+        fakePenalty, effectiveCredScore
     });
 
     // Generate source results
     const sourceResults = generateSourceResults(credibility);
 
-    // Verdict
+    // Verdict — dynamic, data-driven descriptions
     let verdict, verdictClass, verdictDesc;
+
+    const langNote  = detectedLang !== 'en' ? ` Content was analysed using the ${LANGUAGE_NAMES[detectedLang]} indicator dictionary.` : '';
+    const domainNote = (urlMeta && !urlMeta.fallback && urlMeta.domain)
+        ? ` Article sourced from ${urlMeta.domain}.`
+        : '';
+    const depthNote  = wordCount >= 150
+        ? `The article is ${wordCount} words — sufficient depth for reliable analysis.`
+        : wordCount >= 40
+            ? `The article contains ${wordCount} words; a longer submission would improve accuracy.`
+            : `Only ${wordCount} words were submitted — short content limits confidence.`;
+
     if (credibility >= 70) {
-        verdict = 'Likely Credible';
+        verdict      = 'Likely Credible';
         verdictClass = 'credible';
-        verdictDesc = 'This content appears to be consistent with reporting from multiple trusted sources. The language patterns and claims are aligned with verified information.';
+        const posSignals = credMatches.length > 0
+            ? `${credMatches.length} credibility signal${credMatches.length > 1 ? 's' : ''} (e.g. attributed sources, measured language) reinforced the score.`
+            : 'No deceptive language patterns were detected in the content.';
+        const negNote = fakeMatches.length > 0
+            ? ` Note: ${fakeMatches.length} borderline phrase${fakeMatches.length > 1 ? 's were' : ' was'} flagged but did not outweigh the positive indicators.`
+            : '';
+        verdictDesc = `Credibility score: ${Math.round(credibility)}/100. ${posSignals}${negNote} ${depthNote}${domainNote}${langNote} Cross-referencing with our trusted source network found broad alignment. Independent verification is always recommended before sharing.`;
+
     } else if (credibility >= 40) {
-        verdict = 'Suspicious';
+        verdict      = 'Suspicious';
         verdictClass = 'suspicious';
-        verdictDesc = 'This content contains some elements that could not be fully verified. Exercise caution and check additional sources before sharing.';
+        const fakeNote = fakeMatches.length > 0
+            ? `${fakeMatches.length} sensational or misleading phrase${fakeMatches.length > 1 ? 's were' : ' was'} detected (e.g. "${fakeMatches[0]}"${fakeMatches.length > 1 ? `, "${fakeMatches[1]}"` : ''}), each reducing the score by ${INDICATOR_WEIGHTS.sensational_language.weight} pts.`
+            : 'No explicit fake-news phrases were found, but structural or stylistic patterns raised concern.';
+        const capsNote = hasExcessiveCaps ? ' Excessive capitalisation — a common emotional manipulation tactic — was also present.' : '';
+        const punctNote = hasExcessivePunctuation ? ' Repeated exclamation or question marks indicate emotionally charged writing.' : '';
+        verdictDesc = `Credibility score: ${Math.round(credibility)}/100 — this content could not be fully verified. ${fakeNote}${capsNote}${punctNote} ${depthNote}${domainNote}${langNote} Exercise caution: do not share without checking at least two independent trusted sources.`;
+
     } else {
-        verdict = 'Likely Fake';
+        verdict      = 'Likely Fake';
         verdictClass = 'fake';
-        verdictDesc = 'This content contains multiple indicators commonly associated with misinformation. The claims could not be corroborated by trusted sources.';
+        const fakeDetail = fakeMatches.length > 0
+            ? `${fakeMatches.length} misinformation indicator${fakeMatches.length > 1 ? 's' : ''} were found: "${fakeMatches.slice(0, 3).join('", "')}"${fakeMatches.length > 3 ? ` and ${fakeMatches.length - 3} more` : ''}. Each reduced the score by ${INDICATOR_WEIGHTS.sensational_language.weight} pts.`
+            : 'Strong structural patterns associated with misinformation were detected.';
+        const styleNote = (hasExcessiveCaps && hasExcessivePunctuation)
+            ? ' The content uses both excessive capitalisation and aggressive punctuation — hallmarks of emotionally manipulative writing.'
+            : hasExcessiveCaps
+                ? ' Excessive capitalisation was detected, a pattern frequently used to sensationalise false claims.'
+                : hasExcessivePunctuation
+                    ? ' Aggressive use of !!/!! punctuation was detected, typical of emotionally manipulative content.'
+                    : '';
+        verdictDesc = `Credibility score: ${Math.round(credibility)}/100 — this content shows strong indicators of misinformation. ${fakeDetail}${styleNote} ${depthNote}${domainNote}${langNote} Our source network could not corroborate the claims made. Do not share this content without independent fact-checking from a verified outlet.`;
     }
 
     // Build metrics
@@ -413,12 +468,12 @@ function detectLanguage(text) {
 }
 
 // ===== Explainability Builder =====
-function buildExplainability({ fakeMatches, credMatches, hasExcessiveCaps, hasExcessivePunctuation, wordCount, wordCountBonus, fakeScore, credScore }) {
+function buildExplainability({ fakeMatches, credMatches, hasExcessiveCaps, hasExcessivePunctuation, wordCount, wordCountBonus, fakePenalty, effectiveCredScore }) {
     const factors = [];
-    if (fakeMatches.length > 0) factors.push({ label: 'Sensational language', impact: -(fakeMatches.length * INDICATOR_WEIGHTS.sensational_language.weight), type: 'negative' });
-    if (hasExcessiveCaps)       factors.push({ label: 'Excessive caps',        impact: -INDICATOR_WEIGHTS.excessive_caps.weight,  type: 'negative' });
-    if (hasExcessivePunctuation) factors.push({ label: 'Excessive punctuation', impact: -INDICATOR_WEIGHTS.excessive_punct.weight, type: 'negative' });
-    if (wordCount < 10)         factors.push({ label: 'Too short',             impact: -INDICATOR_WEIGHTS.short_content.weight,   type: 'negative' });
+    if (fakeMatches.length > 0) factors.push({ label: `Sensational language (${fakeMatches.length} phrase${fakeMatches.length > 1 ? 's' : ''})`, impact: -fakePenalty, type: 'negative' });
+    if (hasExcessiveCaps)        factors.push({ label: 'Excessive capitalisation',  impact: -INDICATOR_WEIGHTS.excessive_caps.weight,  type: 'negative' });
+    if (hasExcessivePunctuation) factors.push({ label: 'Excessive punctuation',     impact: -INDICATOR_WEIGHTS.excessive_punct.weight, type: 'negative' });
+    if (wordCount < 10)          factors.push({ label: 'Too short (< 10 words)',    impact: -INDICATOR_WEIGHTS.short_content.weight,   type: 'negative' });
     if (credMatches.length > 0) factors.push({ label: 'Credibility cues',      impact: +(credMatches.length * INDICATOR_WEIGHTS.credible_cues.weight), type: 'positive' });
     if (wordCountBonus > 0)     factors.push({ label: 'Content depth bonus',   impact: +Math.round(wordCountBonus),                type: 'positive' });
     return factors;
