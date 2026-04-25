@@ -1,4 +1,4 @@
-// ===== VerityAI - Main Application Logic =====
+// ===== Verity Detection - Main Application Logic =====
 
 document.addEventListener('DOMContentLoaded', () => {
     initNavbar();
