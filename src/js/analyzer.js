@@ -2,18 +2,18 @@
 // Simulates multi-source cross-referencing for fake news detection
 
 const SOURCES_DB = [
-    { name: 'CNN', icon: '📺', reliability: 0.95, domain: 'cnn.com' },
-    { name: 'Times Now', icon: '📰', reliability: 0.92, domain: 'timesnownews.com' },
-    { name: 'BBC News', icon: '🌐', reliability: 0.96, domain: 'bbc.com' },
-    { name: 'New York Times', icon: '🗽', reliability: 0.97, domain: 'nytimes.com' },
+    { name: 'CNN', icon: '📺', reliability: 0.93, domain: 'cnn.com' },
+    { name: 'Times Now', icon: '📰', reliability: 0.89, domain: 'timesnownews.com' },
+    { name: 'BBC News', icon: '🌐', reliability: 0.97, domain: 'bbc.com' },
+    { name: 'New York Times', icon: '🗽', reliability: 0.96, domain: 'nytimes.com' },
     { name: 'The Wall Street Journal', icon: '📊', reliability: 0.94, domain: 'wsj.com' },
-    { name: 'NDTV', icon: '📡', reliability: 0.93, domain: 'ndtv.com' },
-    { name: 'Fox News', icon: '📺', reliability: 0.88, domain: 'foxnews.com' },
+    { name: 'NDTV', icon: '📡', reliability: 0.92, domain: 'ndtv.com' },
+    { name: 'The Hindu', icon: '🪔', reliability: 0.95, domain: 'thehindu.com' },
     { name: 'India Today', icon: '🇮🇳', reliability: 0.91, domain: 'indiatoday.in' },
-    { name: 'Reuters', icon: '🌍', reliability: 0.98, domain: 'reuters.com' },
-    { name: 'The Washington Post', icon: '🏛️', reliability: 0.95, domain: 'washingtonpost.com' },
-    { name: 'Al Jazeera', icon: '🌍', reliability: 0.89, domain: 'aljazeera.com' },
-    { name: 'Bloomberg', icon: '📈', reliability: 0.96, domain: 'bloomberg.com' }
+    { name: 'Telegraph India', icon: '🗞️', reliability: 0.90, domain: 'telegraphindia.com' },
+    { name: 'The Washington Post', icon: '🏛️', reliability: 0.94, domain: 'washingtonpost.com' },
+    { name: 'Al Jazeera', icon: '🌍', reliability: 0.88, domain: 'aljazeera.com' },
+    { name: 'Fox News', icon: '📺', reliability: 0.82, domain: 'foxnews.com' }
 ];
 
 // Known fake news patterns (keyword-based heuristic simulation)
@@ -109,7 +109,9 @@ function analyzeContent(content, type) {
     if (wordCount < 10) fakeScore += 5;
 
     // Base credibility score (0-100)
-    let credibility = 65; // Neutral starting point
+    // Weighted average reliability of the current source pool raises the baseline
+    const avgReliability = SOURCES_DB.reduce((sum, s) => sum + s.reliability, 0) / SOURCES_DB.length;
+    let credibility = Math.round(avgReliability * 70); // Scales to ~65 based on source pool quality
     credibility -= fakeScore;
     credibility += credScore;
     credibility += Math.min(wordCount / 10, 10); // Longer = slightly more credible
@@ -117,8 +119,8 @@ function analyzeContent(content, type) {
     // Clamp between 5 and 98
     credibility = Math.max(5, Math.min(98, credibility));
 
-    // Add some randomness for realism
-    credibility += Math.floor(Math.random() * 10) - 5;
+    // Add small controlled randomness for realism (±4 pts)
+    credibility += Math.floor(Math.random() * 8) - 4;
     credibility = Math.max(5, Math.min(98, credibility));
 
     // Generate source results
@@ -215,26 +217,74 @@ function analyzeContent(content, type) {
     };
 }
 
+// Source-specific corroboration messages for realistic cross-referencing
+const SOURCE_MESSAGES = {
+    credible: {
+        match:     s => `${s.name} independently verified this claim with sourced reporting (reliability: ${Math.round(s.reliability * 100)}%).`,
+        partial:   s => `${s.name} covered a related story but with differing scope or timeline.`,
+        notFound:  s => `No recent coverage of this specific claim found on ${s.name}.`
+    },
+    suspicious: {
+        match:     s => `${s.name} published a tangentially related report — some claims align.`,
+        partial:   s => `${s.name}'s reporting covers the topic but contradicts key specifics.`,
+        noMatch:   s => `${s.name} has not corroborated this claim; coverage shows conflicting data.`,
+        notFound:  s => `${s.name} has no record of this event or claim.`
+    },
+    fake: {
+        partial:   s => `A distant resemblance to a debunked story once covered by ${s.name} was found.`,
+        noMatch:   s => `${s.name} editorial team has directly disputed claims of this nature.`,
+        notFound:  s => `No credible archive matches found across ${s.name}'s verified database.`
+    }
+};
+
 function generateSourceResults(credibility) {
-    const shuffled = [...SOURCES_DB].sort(() => Math.random() - 0.5);
-    const selected = shuffled.slice(0, 8);
+    // Weighted shuffle — higher-reliability sources appear more often
+    const weighted = [...SOURCES_DB].sort((a, b) => (b.reliability - a.reliability) + (Math.random() - 0.5) * 0.3);
+    const selected = weighted.slice(0, 8);
 
     return selected.map(source => {
         const roll = Math.random() * 100;
+        // Adjust effective roll by source reliability: trustworthy sources skew toward confirmation on credible content
+        const reliabilityBias = (source.reliability - 0.88) * 50; // ±5 pts adjustment
+        const adjustedRoll = Math.max(0, Math.min(100, roll - reliabilityBias));
         let status, detail;
+
         if (credibility >= 70) {
-            if (roll < 60) { status = 'match'; detail = `${source.name} verified this with multiple corroborating reports.`; }
-            else if (roll < 85) { status = 'partial'; detail = `Recent coverage from ${source.name} partially aligns.`; }
-            else { status = 'not-found'; detail = `No recent reporting found on ${source.name}.`; }
+            if (adjustedRoll < 62) {
+                status = 'match';
+                detail = SOURCE_MESSAGES.credible.match(source);
+            } else if (adjustedRoll < 87) {
+                status = 'partial';
+                detail = SOURCE_MESSAGES.credible.partial(source);
+            } else {
+                status = 'not-found';
+                detail = SOURCE_MESSAGES.credible.notFound(source);
+            }
         } else if (credibility >= 40) {
-            if (roll < 25) { status = 'match'; detail = `${source.name} published a somewhat similar report.`; }
-            else if (roll < 55) { status = 'partial'; detail = `Coverage by ${source.name} differs on key details.`; }
-            else if (roll < 80) { status = 'no-match'; detail = `Directly contradicts official reports from ${source.name}.`; }
-            else { status = 'not-found'; detail = `No mention of this event on ${source.name}.`; }
+            if (adjustedRoll < 22) {
+                status = 'match';
+                detail = SOURCE_MESSAGES.suspicious.match(source);
+            } else if (adjustedRoll < 50) {
+                status = 'partial';
+                detail = SOURCE_MESSAGES.suspicious.partial(source);
+            } else if (adjustedRoll < 78) {
+                status = 'no-match';
+                detail = SOURCE_MESSAGES.suspicious.noMatch(source);
+            } else {
+                status = 'not-found';
+                detail = SOURCE_MESSAGES.suspicious.notFound(source);
+            }
         } else {
-            if (roll < 10) { status = 'partial'; detail = `Weak similarity to an older ${source.name} article.`; }
-            else if (roll < 50) { status = 'no-match'; detail = `Flagged as completely false according to ${source.name}.`; }
-            else { status = 'not-found'; detail = `No verifiable reports exist on ${source.name}.`; }
+            if (adjustedRoll < 12) {
+                status = 'partial';
+                detail = SOURCE_MESSAGES.fake.partial(source);
+            } else if (adjustedRoll < 55) {
+                status = 'no-match';
+                detail = SOURCE_MESSAGES.fake.noMatch(source);
+            } else {
+                status = 'not-found';
+                detail = SOURCE_MESSAGES.fake.notFound(source);
+            }
         }
         return { ...source, status, detail };
     });
