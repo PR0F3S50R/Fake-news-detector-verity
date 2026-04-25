@@ -359,15 +359,56 @@
             </div>
             <div class="api-card"
                 style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 40px; backdrop-filter: blur(20px);">
-                <h3 style="margin-bottom: 10px; font-size: 1.25rem;">Request API Access</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 20px;">The VerityAI API is currently in private
-                    beta. Submit your details below to join the waitlist and receive your API credentials.</p>
-                <div style="display: flex; gap: 12px; margin-bottom: 30px; flex-wrap: wrap;">
-                    <input type="email" placeholder="your@email.com"
-                        style="flex: 1; min-width: 200px; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 12px 16px; border-radius: var(--radius-sm); color: var(--text-primary); font-family: var(--font-main); font-size: 1rem;"
-                        id="api-email-input">
-                    <button class="btn btn-primary" onclick="handleApiRequest()">Request Access</button>
-                </div>
+
+                <h3 style="margin-bottom: 8px; font-size: 1.25rem;">Request API Access</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
+                    The VerityAI API is currently in private beta. Fill in your details below to join the waitlist
+                    &mdash; you will receive your API credentials by email once approved.
+                </p>
+
+                <!-- Formspree-powered form — submissions are emailed to the project owner -->
+                <form id="api-request-form"
+                    action="https://formspree.io/f/xjkvpqwb"
+                    method="POST"
+                    style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 32px;">
+
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 180px;">
+                            <label for="api-name" style="display: block; font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px;">Full Name</label>
+                            <input type="text" id="api-name" name="name" required placeholder="Jane Doe"
+                                style="width: 100%; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 12px 16px; border-radius: var(--radius-sm); color: var(--text-primary); font-family: var(--font-main); font-size: 0.95rem; transition: border-color 0.2s;"
+                                onfocus="this.style.borderColor='var(--accent-primary)'" onblur="this.style.borderColor='var(--border-color)'">
+                        </div>
+                        <div style="flex: 1; min-width: 180px;">
+                            <label for="api-email" style="display: block; font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px;">Work / Personal Email</label>
+                            <input type="email" id="api-email" name="email" required placeholder="you@example.com"
+                                style="width: 100%; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 12px 16px; border-radius: var(--radius-sm); color: var(--text-primary); font-family: var(--font-main); font-size: 0.95rem; transition: border-color 0.2s;"
+                                onfocus="this.style.borderColor='var(--accent-primary)'" onblur="this.style.borderColor='var(--border-color)'">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="api-usecase" style="display: block; font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px;">Intended Use Case</label>
+                        <textarea id="api-usecase" name="usecase" rows="3" placeholder="Describe what you plan to build with the VerityAI API..."
+                            style="width: 100%; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 12px 16px; border-radius: var(--radius-sm); color: var(--text-primary); font-family: var(--font-main); font-size: 0.95rem; resize: vertical; transition: border-color 0.2s;"
+                            onfocus="this.style.borderColor='var(--accent-primary)'" onblur="this.style.borderColor='var(--border-color)'" required></textarea>
+                    </div>
+
+                    <!-- Hidden honeypot to prevent spam -->
+                    <input type="text" name="_gotcha" style="display:none;">
+
+                    <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                        <button type="submit" class="btn btn-primary" id="api-submit-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;">
+                                <line x1="22" y1="2" x2="11" y2="13"/>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                            </svg>
+                            Send Request
+                        </button>
+                        <span id="api-form-status" style="font-size: 0.875rem; display: none;"></span>
+                    </div>
+                </form>
+
                 <h3 style="margin-bottom: 10px; font-size: 1.25rem;">Example Request</h3>
                 <pre
                     style="background: #000; padding: 20px; border-radius: var(--radius-md); overflow-x: auto; font-family: var(--font-mono); color: #a5b4fc; font-size: 0.9rem; border: 1px solid var(--border-color);"><code>curl -X POST https://api.verityai.com/v1/analyze \
@@ -420,15 +461,49 @@
     </footer>
 
     <script>
-        function handleApiRequest() {
-            const email = document.getElementById('api-email-input').value.trim();
-            if (!email || !email.includes('@')) {
-                alert('Please enter a valid email address.');
-                return;
-            }
-            alert('Thank you! Your API access request has been received. We will contact you at ' + email + ' when your account is ready.');
-            document.getElementById('api-email-input').value = '';
-        }
+        // ===== Formspree API Access Request =====
+        // Submissions are POSTed to Formspree which emails them to the project owner.
+        // To change the destination email: log in at formspree.io and update form xjkvpqwb.
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('api-request-form');
+            if (!form) return;
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn    = document.getElementById('api-submit-btn');
+                const status = document.getElementById('api-form-status');
+
+                // Loading state
+                btn.disabled = true;
+                btn.innerHTML = '<div style="width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite;"></div> Sending...';
+                status.style.display = 'none';
+
+                try {
+                    const data = new FormData(form);
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: data,
+                        headers: { 'Accept': 'application/json' }
+                    });
+
+                    if (response.ok) {
+                        status.textContent = '&#10003; Request received! We will email you when your account is ready.';
+                        status.style.cssText = 'display:inline-block; color:var(--success); font-weight:600;';
+                        form.reset();
+                    } else {
+                        const json = await response.json();
+                        status.textContent = json.errors ? json.errors.map(e => e.message).join(', ') : 'Submission failed. Please try again.';
+                        status.style.cssText = 'display:inline-block; color:var(--danger); font-weight:600;';
+                    }
+                } catch (err) {
+                    status.textContent = 'Network error. Please check your connection and try again.';
+                    status.style.cssText = 'display:inline-block; color:var(--danger); font-weight:600;';
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Request';
+                }
+            });
+        });
     </script>
 
     <script src="js/app.js"></script>
